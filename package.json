@@ -2,13 +2,14 @@
   "dependencies": {
     "express": "^4.19.2",
     "mysql2": "^3.10.1",
+    "nodemon": "^3.1.4",
     "sequelize": "^6.37.3"
   },
   "name": "ecommercedb",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
