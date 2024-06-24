@@ -27,7 +27,7 @@ const UserController = {
       })
   },
 
-  async delete(req, res) {
+  async deleteById(req, res) {
     await User.destroy({
       where: {
         id: req.params.id,
