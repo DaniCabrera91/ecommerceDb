@@ -6,7 +6,8 @@ module.exports = {
     return queryInterface.changeColumn('Users', 'email', {
       type: Sequelize.STRING,
       unique: true,
-    }) 
+    })
+ 
   },
 
   async down (queryInterface, Sequelize) {

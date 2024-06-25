@@ -29,16 +29,56 @@ const UserController = {
   }
 },
 
-  getAll(req, res) {
-    User.findAll({include: [Review]})
-      .then((users) => res.send(users))
-      .catch((err) => {
-        console.log(err)
-        res.status(500).send({
-            message: 'Ha habido un problema al cargar las publicaciones',
-          })
-      })
-  },
+async getAll(req, res) {
+  try {
+    const users = await User.findAll({ include: [Review] });
+    res.send(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error a la hora de mostrar usuarios.",
+    });
+  }
+},
+
+async getById(req, res) {
+  const userId = parseInt(req.params.id);
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    res.json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error mostrando usuario' });
+  }
+},
+
+async getLogged(req, res) {
+  const userId = req.user.id; // Get the user ID from the decoded JWT
+
+  try {
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Order,
+          include: [{ model: OrderProduct, include: ['product'] }],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(userData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving user data' });
+  }
+},
+
+
 
   async deleteById(req, res) {
     await User.destroy({
@@ -62,8 +102,7 @@ const UserController = {
     res.send('Usuario actualizado con éxito')
   },
  
- 
- 
+
   login(req, res) {
     User.findOne({ where: { email: req.body.email } }).then((user) => {
       if (!user) {

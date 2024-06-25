@@ -11,8 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       User.hasMany(models.Order, { foreignKey: 'userId' })
-      User.hasMany(models.Review, { foreignKey: 'userId' })   
-    }
+      User.hasMany(models.Review, { foreignKey: 'userId' })     }
   }
   User.init({
     firstName: {
@@ -21,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notNull: { msg: 'Por favor introduce tu nombre'},
     },
-  },  
+  },      
     lastName: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
@@ -30,8 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         notNull: { msg: 'Por favor introduce tu correo'},
         isEmail: { msg: 'Por favor introduce un correo valido' },
       },
-   
-    },
+    },    
     password: DataTypes.STRING,
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
