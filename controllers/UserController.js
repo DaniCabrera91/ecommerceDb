@@ -5,16 +5,29 @@ const { jwt_secret } = require('../config/config.json')['development']
 const { Op } = Sequelize
 
 const UserController = {
-  create(req, res) {
-    req.body.role = 'user'
-    const password = bcrypt.hashSync(req.body.password, 10)
-    User.create({ ...req.body, password: password })
-    // if (!firstName || !lastName || !email || !password) return res.status(400).send('Error: Falta algún campo por rellenar')
-      .then((user) =>
-        res.status(201).send({ message: 'Usuario creado con éxito', user })
-      )
-      .catch((err) => console.error(err))
-  },
+  async create(req, res, next) {
+  try {
+    const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+
+    if (missingFields.length > 0) {
+      res.status(400).send({ message: 'Rellena todos los campos' })
+      return
+    }
+    const passwordHash = await bcrypt.hashSync(req.body.password, 10)
+
+    const user = await User.create({
+      ...req.body,
+      password: passwordHash,
+      role: 'user' 
+    });
+
+    res.status(201).send({ message: 'Usuario creado con éxito', user })
+  } catch (error) {
+    console.error(error)
+    next(error)
+  }
+},
 
   getAll(req, res) {
     User.findAll({include: [Review]})

@@ -1,15 +1,20 @@
 const { Product } = require('../models/index.js')
 
 const ProductController = {
- create(req, res) {
-   Product.create(req.body)
-     .then((Product) => {
-       Product.addCategory(req.body.CategoryId),
-       Product.addOrder(req.body.OrderId)
-       res.status(201).send({ message: 'Producto creado con éxito', Product})
-     })
-     .catch((err) => console.error(err))
- },
+  create(req, res) {
+    Product.create(req.body)
+      .then((Product) => {
+        try {
+          Product.addCategory(req.body.CategoryId)
+        } catch (err) {
+          console.error("Error adding category:", err)
+        }
+        Product.addOrder(req.body.OrderId)
+        res.status(201).send({ message: 'Producto creado con éxito', Product })
+      })
+      .catch((err) => console.error(err))
+  },
+  
 
 //  async getAll(req, res) {
 //    try {
@@ -21,20 +26,23 @@ const ProductController = {
 //      console.error(error)
 //    }
 //  },
-
-//  async delete(req, res) {
-//   try {
-//     await Product.destroy({
-//       where: { id: req.params.id }
-//     })
-//     await OrderProduct.destroy({
-//       where: { ProductId: req.params.id }
-//     })
-//     res.send({ message: 'El producto ha sido eliminada' })
-//   } catch (error) {
-//     console.log(error)
-//   }
-// },
+async delete(req, res) {
+  try {
+    const deletedProduct = await Product.destroy({
+      where: { id: req.params.id }
+    });
+       // await OrderProduct.destroy({
+    //   where: { ProductId: req.params.id }
+    // })
+    if (deletedProduct === 0) {
+      res.status(404).send({ message: 'Producto no encontrado con el ID especificado' });
+    } else {
+      res.send({ message: 'El producto ha sido eliminado' });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+},
 
 // async update(req, res) {
 //   try {
