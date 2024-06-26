@@ -60,5 +60,35 @@ async delete(req, res) {
 
 }
 
+const { Product } = require('../models');
+
+async function update(req, res) {
+  try {
+    const { productName, price, CategoryId } = req.body;
+
+    if (!productName || typeof price !== 'number' || !CategoryId) {
+      return res.status(400).send('Datos incompletos o inválidos');
+    }
+
+    const [updatedRows] = await Product.update(
+      { productName, price, CategoryId },
+      { where: { id: req.params.id } }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).send('Producto no encontrado');
+    }
+
+    res.send('Producto actualizado con éxito');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al actualizar el producto');
+  }
+};
+
+module.exports = {
+  update
+};
+
 
 module.exports = ProductController
