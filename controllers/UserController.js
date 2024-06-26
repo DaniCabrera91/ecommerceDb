@@ -46,7 +46,7 @@ async getById(req, res) {
   try {
     const user = await User.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(404).json({ message: 'Usuario no encontrado' })
     }
     res.json({ user });
   } catch (error) {
@@ -56,29 +56,33 @@ async getById(req, res) {
 },
 
 async getLogged(req, res) {
-  const userId = req.user.id; // Get the user ID from the decoded JWT
-
   try {
+    const userId = req.user.id
     const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Order,
-          include: [{ model: OrderProduct, include: ['product'] }],
-        },
-      ],
+      where: {
+        [Op.and]: [
+          { UserId: req.user.id },
+          { token: req.headers.authorization },
+        ],
+      },
+        
+      // include: [
+      //   {
+      //     model: Order,
+      //     include: [{ model: OrderProduct, include: ['product'] }],
+      //   },
+      // ],
     });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(userData);
+    res.json(user)
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving user data' });
   }
 },
-
-
 
   async deleteById(req, res) {
     await User.destroy({
@@ -118,6 +122,7 @@ async getLogged(req, res) {
      })
   },
   
+
   async logout(req, res) {
     try {
       await Token.destroy({
