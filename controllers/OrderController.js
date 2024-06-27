@@ -1,4 +1,4 @@
-const { Order } = require('../models/index.js')
+const { Order, Product } = require('../models/index.js')
 
 const OrderController = {
  create(req, res) {
@@ -9,6 +9,17 @@ const OrderController = {
      })
      .catch((err) => console.error(err))
  },
+
+ async getAll(req, res) {
+  try {
+    const orders = await Order.findAll({
+      include: [{ model: Product, attributes: ["productName"], through: { attributes: [] } }],
+    });
+    res.send(orders);
+  } catch (error) {
+    console.error(error);
+  }
+},
 
  
 }

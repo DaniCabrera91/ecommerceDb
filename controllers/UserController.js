@@ -1,4 +1,4 @@
-const { User, Review, Token, Sequelize } = require('../models/index.js')
+const { User, Review, Token, Sequelize, Order, Product } = require('../models/index.js')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { jwt_secret } = require('../config/config.json')['development']
@@ -66,12 +66,12 @@ async getLogged(req, res) {
         ],
       },
         
-      // include: [
-      //   {
-      //     model: Order,
-      //     include: [{ model: OrderProduct, include: ['product'] }],
-      //   },
-      // ],
+      include: [
+        {
+          model: Order,
+          include: [Product]
+        },
+      ],
     });
 
     if (!user) {

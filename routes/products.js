@@ -5,7 +5,7 @@ const { authentication, isAdmin } = require('../middlewares/authentication')
 
 
 router.post('/', authentication, ProductController.create)
-// router.get('/', ProductController.getAll)
+router.get('/', ProductController.getAll)
 router.delete('/:id', ProductController.delete)
 // router.put('/:id', ProductController.update)
 

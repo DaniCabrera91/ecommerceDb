@@ -1,4 +1,4 @@
-const { Product } = require('../models/index.js')
+const { Product, Category } = require('../models/index.js')
 
 const ProductController = {
   create(req, res) {
@@ -16,16 +16,17 @@ const ProductController = {
   },
   
 
-//  async getAll(req, res) {
-//    try {
-//      const products = await Product.findAll({
-//        include: [{ model: Order, through: { attributes: [] } }]
-//      })
-//      res.send(products)
-//    } catch (error) {
-//      console.error(error)
-//    }
-//  },
+  async getAll(req, res) {
+    try {
+      const products = await Product.findAll({ include: [Category] });
+      res.send(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Error a la hora de mostrar productos.",
+      })
+    }
+  },
 async delete(req, res) {
   try {
     const deletedProduct = await Product.destroy({
