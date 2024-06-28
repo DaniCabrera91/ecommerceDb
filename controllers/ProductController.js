@@ -1,6 +1,8 @@
 const { Product, Category } = require('../models/index.js')
 
 const ProductController = {
+
+//CREATE:  
   create(req, res) {
     Product.create(req.body)
       .then((Product) => {
@@ -15,7 +17,7 @@ const ProductController = {
       .catch((err) => console.error(err))
   },
   
-
+//GET ALL:
   async getAll(req, res) {
     try {
       const products = await Product.findAll({ include: [Category] });
@@ -27,6 +29,8 @@ const ProductController = {
       })
     }
   },
+
+//DELETE:  
 async delete(req, res) {
   try {
     const deletedProduct = await Product.destroy({
@@ -45,19 +49,20 @@ async delete(req, res) {
   }
 },
 
-// async update(req, res) {
-//   try {
-//     await Product.update(req.body, {
-//       where: { id: req.params.id }
-//     })
-//     const product = await Product.findByPk(req.params.id)
-//     product.setOrders(req.body.OrderId)
-//     res.send('Producto actualizado con éxito')
-//   } catch (error) {
-//     console.error(error)
-//     res.status(500).send({ message: 'no ha sido posible actualizar el producto' })
-//   }
-// }
+//UPDATE:
+async update(req, res) {
+  try {
+    await Product.update(req.body, {
+      where: { id: req.params.id }
+    })
+    const product = await Product.findByPk(req.params.id)
+    product.setOrders(req.body.OrderId)
+    res.send('Producto actualizado con éxito')
+  } catch (error) {
+    console.error(error)
+    res.status(500).send({ message: 'no ha sido posible actualizar el producto' })
+  }
+},
 
 }
 

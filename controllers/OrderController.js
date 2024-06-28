@@ -1,6 +1,8 @@
-const { Order, Product } = require('../models/index.js')
+const { Order, Product, OrderProduct } = require('../models/index.js')
 
 const OrderController = {
+
+//CREATE: 
  create(req, res) {
    Order.create({ ...req.body, UserId: req.user.id })
      .then((Order) => {
@@ -10,14 +12,16 @@ const OrderController = {
      .catch((err) => console.error(err))
  },
 
+// GET ALL: 
  async getAll(req, res) {
   try {
-    const orders = await Order.findAll({
-      include: [{ model: Product, attributes: ["productName"], through: { attributes: [] } }],
-    });
+    const orders = await Order.findAll({ include: Product, through: {OrderProduct}});
     res.send(orders);
   } catch (error) {
     console.error(error);
+    res.status(500).send({
+      message: "Error a la hora de mostrar pedidos.",
+    })
   }
 },
 

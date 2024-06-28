@@ -2,6 +2,7 @@ const { Category, Product } = require('../models/index.js')
 
 const CategoryController = {
 
+//CREATE: 
  create(req, res) {
    Category.create(req.body)
      .then((Category) =>
@@ -10,6 +11,7 @@ const CategoryController = {
      .catch(console.error)
  },
 
+// GET ALL: 
  async getAll(req, res) {
   try {
     const categories = await Category.findAll({ include: [Product] });

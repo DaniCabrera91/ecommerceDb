@@ -2,6 +2,7 @@ const { Review, User } = require('../models/index.js')
 
 const ReviewController = {
 
+//CREATE: 
 create(req, res) {
         Review.create({ ...req.body, UserId: req.user.id })
           .then((Review) =>
@@ -13,6 +14,7 @@ create(req, res) {
           .catch(console.error)
       },
 
+//GETA ALL:
 getAll(req, res) {
         Review.findAll({ include: [User] })
           .then((Review) => res.send(Review))
@@ -24,12 +26,14 @@ getAll(req, res) {
           })
       },
 
+//GET BY ID:      
  getById(req, res) {
    Review.findByPk(req.params.id, {
      include: [{ model: User, attributes: ['firstName'] }],
    }).then((review) => res.send(review))
  },
-     
+ 
+//GET BY NAME 
  getOneByName(req, res) {
     Review.findOne({
       where: {
@@ -41,14 +45,15 @@ getAll(req, res) {
     }).then((Review) => res.send(Review))
   },
 
-  async delete(req, res) {
-    await Review.destroy({
-      where: {
-        id: req.params.id,
-      },
-    })
-    res.send('La review ha sido eliminada con éxito')
-  }
+//DELETE:
+async delete(req, res) {
+  await Review.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+  res.send('La review ha sido eliminada con éxito')
+}
  
       
 }

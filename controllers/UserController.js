@@ -5,6 +5,8 @@ const { jwt_secret } = require('../config/config.json')['development']
 const { Op } = Sequelize
 
 const UserController = {
+
+  // CREATE:
   async create(req, res, next) {
   try {
     const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone'];
@@ -29,6 +31,7 @@ const UserController = {
   }
 },
 
+// GET ALL:
 async getAll(req, res) {
   try {
     const users = await User.findAll({ include: [Review] });
@@ -55,35 +58,32 @@ async getById(req, res) {
   }
 },
 
+
+// GET LOGGED:
 async getLogged(req, res) {
   try {
-    const userId = req.user.id
+    const userId = req.user.id;
     const user = await User.findByPk(userId, {
-      where: {
-        [Op.and]: [
-          { UserId: req.user.id },
-          { token: req.headers.authorization },
-        ],
-      },
-        
-      include: [
-        {
-          model: Order,
-          include: [Product]
-        },
-      ],
+      include: [{
+        model: Order,
+        include: [{
+          model: OrderProduct, // Include the OrderProduct table
+          include: [Product] // Include products within OrderProduct
+        }],
+      }],
     });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user)
+    res.json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving user data' });
   }
 },
 
+// DELETE BY ID:
   async deleteById(req, res) {
     await User.destroy({
       where: {
@@ -106,7 +106,7 @@ async getLogged(req, res) {
     res.send('Usuario actualizado con éxito')
   },
  
-
+// LOGIN:
   login(req, res) {
     User.findOne({ where: { email: req.body.email } }).then((user) => {
       if (!user) {
@@ -122,7 +122,7 @@ async getLogged(req, res) {
      })
   },
   
-
+// LOGOUT:
   async logout(req, res) {
     try {
       await Token.destroy({
