@@ -8,33 +8,58 @@ const UserController = {
 
   // CREATE:
   async create(req, res, next) {
-  try {
-    const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone'];
-    const missingFields = requiredFields.filter(field => !req.body[field]);
-
-    if (missingFields.length > 0) {
-      res.status(400).send({ message: 'Rellena todos los campos' })
-      return
+    try {
+      const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone'];
+      const missingFields = requiredFields.filter(field => !req.body[field]);
+  
+      if (missingFields.length > 0) {
+        res.status(400).send({ message: 'Rellena todos los campos obligatorios'});
+        return
+      }
+  
+      // Validacion de email mediante REGEX
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email)) {
+        res.status(400).send({ message: 'Formato de email incorrecto' });
+        return;
+      }
+  
+      const passwordHash = await bcrypt.hashSync(req.body.password, 10)
+  
+      const user = await User.create({
+        ...req.body,
+        password: passwordHash,
+        role: 'user'
+      });
+  
+      res.status(201).send({ message: 'Usuario creado con éxito', user });
+    } catch (error) {
+      console.error(error);
+      next(error)
     }
-    const passwordHash = await bcrypt.hashSync(req.body.password, 10)
+  },
 
-    const user = await User.create({
-      ...req.body,
-      password: passwordHash,
-      role: 'user' 
-    });
-
-    res.status(201).send({ message: 'Usuario creado con éxito', user })
-  } catch (error) {
-    console.error(error)
-    next(error)
-  }
+// UPDATE:
+update(req, res) {
+  const { id } = req.params
+  User.findByPk(id)
+    .then((users) => {
+      if (!users) {
+        return res.status(404).send({ message: 'Usuario no encontrado' });
+      }
+      return products.update(req.body)
+        .then(() => res.status(200).send({ message: 'Usuario actualizado con éxito', Product }))
+        .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }));
+    })
+    .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }));
 },
 
 // GET ALL:
 async getAll(req, res) {
   try {
-    const users = await User.findAll({ include: [Review] });
+    const users = await User.findAll({ include: [{
+      model: Order,
+    }],});
     res.send(users);
   } catch (error) {
     console.error(error);
@@ -44,6 +69,7 @@ async getAll(req, res) {
   }
 },
 
+// GET BY ID:
 async getById(req, res) {
   const userId = parseInt(req.params.id);
   try {
@@ -62,24 +88,31 @@ async getById(req, res) {
 // GET LOGGED:
 async getLogged(req, res) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
     const userId = req.user.id;
     const user = await User.findByPk(userId, {
+      attributes: ['id', 'firstName', 'email'], // Specify user attributes to include
       include: [{
         model: Order,
-        include: [{
-          model: OrderProduct, // Include the OrderProduct table
-          include: [Product] // Include products within OrderProduct
-        }],
+        include: [Product],
       }],
     });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
     res.json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving user data' });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      // Handle specific database constraint errors
+      res.status(400).json({ message: 'Unique constraint violated' });
+    } else {
+      res.status(500).json({ message: 'Error retrieving user data' });
+    }
   }
 },
 

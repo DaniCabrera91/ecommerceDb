@@ -9,7 +9,7 @@ router.get('/id/:id', UserController.getById)
 router.get('/loggedUser', authentication, UserController.getLogged)
 
 router.delete('/id/:id', authentication, isAdmin, UserController.deleteById)
-router.put('/:id', authentication, UserController.update)
+router.put('/id/:id', authentication, UserController.update)
 
 router.post('/login', UserController.login)
 router.delete('/logout', authentication, UserController.logout)

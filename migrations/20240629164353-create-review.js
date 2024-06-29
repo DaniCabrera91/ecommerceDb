@@ -18,10 +18,10 @@ module.exports = {
       postDate: {
         type: Sequelize.DATE
       },
-      productId: {
+      ProductId: {
         type: Sequelize.INTEGER
       },
-      userId: {
+      UserId: {
         type: Sequelize.INTEGER
       },
       createdAt: {

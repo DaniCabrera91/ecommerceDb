@@ -1,4 +1,4 @@
-const { Review, User } = require('../models/index.js')
+const { Review, User, Product } = require('../models/index.js')
 
 const ReviewController = {
 
@@ -16,7 +16,7 @@ create(req, res) {
 
 //GETA ALL:
 getAll(req, res) {
-        Review.findAll({ include: [User] })
+        Review.findAll({ include: [User, Product] })
           .then((Review) => res.send(Review))
           .catch((err) => {
             console.log(err)
