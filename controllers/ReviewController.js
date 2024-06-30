@@ -3,16 +3,26 @@ const { Review, User, Product } = require('../models/index.js')
 const ReviewController = {
 
 //CREATE: 
-create(req, res) {
-        Review.create({ ...req.body, UserId: req.user.id })
-          .then((Review) =>
-            res.status(201).send({
-              message: 'Publicación creada con éxito',
-              Review,
-            })
-          )
-          .catch(console.error)
-      },
+async create(req, res) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const userId = req.user.id; // Get user ID from logged-in user
+    const reviewData = { ...req.body, UserId: userId }; // Add user ID to review data
+
+    const review = await Review.create(reviewData); // Create review
+
+    res.status(201).json({
+      message: 'Review created successfully',
+      review,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating review' });
+  }
+},
 
 //GETA ALL:
 getAll(req, res) {

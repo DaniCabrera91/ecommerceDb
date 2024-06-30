@@ -3,31 +3,26 @@ const { Order, Product, User } = require('../models/index.js')
 const OrderController = {
 
 //CREATE: 
-async create(req, res)
-    {
-      const checkUser = await User.findOne({
-        where: {
-          id: req.body.UserId
-        }
-      })
+async create(req, res) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' })
+    }
+    const userId = req.user.id
+    const orderData = { ...req.body }
+    const createdOrder = await Order.create({ ...orderData, UserId: userId })
 
-      const checkProduct = await Product.findOne({
-        where: {
-          id: req.body.ProductId
-        }
-      })
+    await createdOrder.addProduct(req.body.ProductId)
 
-      if(checkUser && checkProduct){
-        await Order.create({...req.body, UserId: req.body.UserId})
-        .then((order) => {
-          res.status(201).send({message: 'Pedido creado', order})
-          order.addProduct(req.body.ProductId)
-        })
-        .catch((error)=>{res.status(500).send({message: 'Error:', error})})
-      } else {
-        res.status(500).send({message: 'Incorrect UserId/ProductId'})
-      }
-    },
+    res.status(201).json({
+      message: 'Order created successfully',
+      order: createdOrder,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating order' })
+  }
+},
 
 // GET ALL: 
  async getAll(req, res) {
