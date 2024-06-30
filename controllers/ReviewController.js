@@ -24,7 +24,7 @@ async create(req, res) {
   }
 },
 
-//GETA ALL:
+//GET ALL:
 getAll(req, res) {
         Review.findAll({ include: [User, Product] })
           .then((Review) => res.send(Review))
@@ -43,17 +43,34 @@ getAll(req, res) {
    }).then((review) => res.send(review))
  },
  
-//GET BY NAME 
- getOneByName(req, res) {
-    Review.findOne({
-      where: {
-        title: {
-          [Op.like]: `%${req.params.title}%`,
-        },
-      },
-      include: [User],
-    }).then((Review) => res.send(Review))
-  },
+// UPDATE:
+async update(req, res) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const reviewId = req.params.id; // Get review ID from URL parameter
+    const userId = req.user.id; // Get user ID from authenticated user
+
+    const foundReview = await Review.findByPk(reviewId); // Find review by ID
+
+    if (!foundReview) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+
+    if (foundReview.UserId !== userId) {
+      return res.status(403).json({ message: 'Forbidden: You cannot update this review' });
+    }
+
+    await foundReview.update(req.body); // Update review with request data
+
+    res.status(200).json({ message: 'Review updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating review' });
+  }
+},
 
 //DELETE:
 async delete(req, res) {
