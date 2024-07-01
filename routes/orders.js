@@ -4,10 +4,7 @@ const OrderController = require('../controllers/OrderController')
 const { authentication } = require('../middlewares/authentication')
 
 router.post('/', authentication, OrderController.create)
-// router.post('/', CategoryController.create);
-router.get('/', OrderController.getAll);
-// router.put('/:id', CategoryController.update);
-// router.delete('/:id', CategoryController.delete);
+router.get('/', OrderController.getAll)
 
 module.exports = router
 

@@ -44,9 +44,8 @@ async create(req, res) {
       message: "Error a la hora de mostrar pedidos.",
     })
   }
-},
+}
 
- 
 }
 
 module.exports = OrderController
