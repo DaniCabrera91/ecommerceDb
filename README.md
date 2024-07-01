@@ -14,24 +14,255 @@ El objetivo del proyecto es desarrollar una API REST que cumpla con los siguient
     Implementar al menos una relación Many to Many y otra One to Many entre las tablas.
     Utilización de seeders para poblar la base de datos con datos iniciales.
 ## Authors
-
-https://github.com/denisc911
 https://github.com/DaniCabrera91
+https://github.com/denisc911
+
 ## Deployment
 
 To deploy this project run
 
 ```bash
-  npm run deploy
+  npm init  -y
+  npm install express sequelize mysql2
+  sequelize init
+
+
+  Configurar la BD config.json (renombrar el ejemplo y asignar datos del servidor)
+
+sequelize db:create
+
+Creacion de productos (seeders)
+sequelize db:seed:all
+
+Encriptado de contraseñas
+
+npm i bcrypt
+
+Autenticacion JWT
+
+npm i jsonwebtoken
+
+jwt_secret (definirlo en config.json [development])
+
 ```
 
 
 ## Documentation
 
-[Documentation](https://linktodocumentation)
+
 
 
 ## API Reference
+
+### Users
+
+#### Create User
+**URL:** `http://localhost:3000/users/`
+
+**Method:** `POST`
+
+| Parameter   | Type     | Description                |
+|-------------|----------|----------------------------|
+| `firstName` | `string` | **Required**. User's first name |
+| `lastName`  | `string` | **Optional**. User's last name |
+| `email`     | `string` | **Required**. User's email address |
+| `password`  | `string` | **Required**. User's password |
+| `address`   | `string` | **Required**. User's address |
+| `phone`     | `string` | **Required**. User's phone number |
+
+#### Login User
+**URL:** `http://localhost:3000/users/login`
+
+**Method:** `POST`
+
+| Parameter  | Type     | Description                |
+|------------|----------|----------------------------|
+| `email`    | `string` | **Required**. User's email address |
+| `password` | `string` | **Required**. User's password |
+
+#### Get All Users
+**URL:** `http://localhost:3000/users`
+
+**Method:** `GET`
+
+| Parameter   | Type     | Description                |
+|-------------|----------|----------------------------|
+| `api_key`   | `string` | **Required**. Your API key |
+
+#### Get Logged User
+**URL:** `http://localhost:3000/users/loggedUser`
+
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+
+#### Get User by ID
+**URL:** `http://localhost:3000/users/id/{id}`
+
+**Method:** `GET`
+
+| Parameter | Type     | Description                |
+|-----------|----------|----------------------------|
+| `id`      | `string` | **Required**. User ID      |
+| `api_key` | `string` | **Required**. Your API key |
+
+
+### Products
+
+#### Create Product
+**URL:** `http://localhost:3000/products`
+**Method:** `POST`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `productName`   | `string` | **Required**. Product name   |
+| `price`         | `number` | **Required**. Product price  |
+| `CategoryId`    | `number` | **Required**. Category ID    |
+
+#### Update Product
+**URL:** `http://localhost:3000/products/{id}`
+**Method:** `PUT`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `productName`   | `string` | **Required**. Product name   |
+| `price`         | `number` | **Required**. Product price  |
+| `CategoryId`    | `number` | **Required**. Category ID    |
+
+#### Get All Products
+**URL:** `http://localhost:3000/products`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+
+#### Get Product by ID
+**URL:** `http://localhost:3000/products/{id}`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `id`            | `string` | **Required**. Product ID     |
+
+### Categories
+
+#### Create Category
+**URL:** `http://localhost:3000/categories`
+**Method:** `POST`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `categoryName`  | `string` | **Required**. Category name  |
+
+#### Update Category
+**URL:** `http://localhost:3000/categories/{id}`
+**Method:** `PUT`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `categoryName`  | `string` | **Required**. Category name  |
+
+#### Get All Categories
+**URL:** `http://localhost:3000/categories`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+
+#### Get Category by ID
+**URL:** `http://localhost:3000/categories/{id}`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `id`            | `string` | **Required**. Category ID    |
+
+### Orders
+
+#### Create Order
+**URL:** `http://localhost:3000/orders`
+**Method:** `POST`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `userId`        | `number` | **Required**. User ID        |
+| `productIds`    | `array`  | **Required**. Array of product IDs |
+
+#### Get All Orders
+**URL:** `http://localhost:3000/orders`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+
+### Reviews
+
+#### Create Review
+**URL:** `http://localhost:3000/reviews`
+**Method:** `POST`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `title`         | `string` | **Required**. Review title   |
+| `body`          | `string` | **Required**. Review body    |
+| `postDate`      | `string` | **Required**. Review post date |
+| `ProductId`     | `number` | **Required**. Product ID     |
+
+#### Get All Reviews
+**URL:** `http://localhost:3000/reviews`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+
+#### Get Review by ID
+**URL:** `http://localhost:3000/reviews/id/{id}`
+**Method:** `GET`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `id`            | `string` | **Required**. Review ID      |
+
+#### Update Review
+**URL:** `http://localhost:3000/reviews/{id}`
+**Method:** `PUT`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `title`         | `string` | **Required**. Review title   |
+| `body`          | `string` | **Required**. Review body    |
+| `postDate`      | `string` | **Required**. Review post date |
+| `ProductId`     | `number` | **Required**. Product ID     |
+
+#### Delete Review
+**URL:** `http://localhost:3000/reviews/id/{id}`
+**Method:** `DELETE`
+
+| Parameter     | Type     | Description                  |
+|---------------|----------|------------------------------|
+| `Authorization` | `string` | **Required**. Bearer token   |
+| `id`            | `string` | **Required**. Review ID      |
+
+## Appendix
+
+Any additional information goes here
+
 Contenido Postman
 
 	"info": {
@@ -1041,27 +1272,3 @@ Contenido Postman
 		}
 	]
 }
-#### Get all items
-
-```http
-  GET /api/items
-```
-
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**. Your API key |
-
-#### Get item
-
-```http
-  GET /api/items/${id}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
-#### add(num1, num2)
-
-Takes two numbers and returns the sum.
-
