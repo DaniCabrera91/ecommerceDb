@@ -147,7 +147,7 @@ async login(req, res) {
       return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
     }
 
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    const isMatch = await bcrypt.compare(req.body.password, user.password)
     if (!isMatch) {
       return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
     }
