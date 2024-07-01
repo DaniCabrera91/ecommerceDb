@@ -1,4 +1,4 @@
-const { Product, Category, Review} = require('../models/index.js');
+const { Product, Category, Review} = require('../models/index.js')
 
 const ProductController = {
 
@@ -6,7 +6,7 @@ const ProductController = {
 create(req, res) {
   const requiredFields = ['productName', 'price', 'CategoryId']
 
-  const missingFields = requiredFields.filter(field => !req.body[field]);
+  const missingFields = requiredFields.filter(field => !req.body[field])
 
   if (missingFields.length > 0) {
     return res.status(400).send({ message: 'Por favor rellena todos los campos' })
@@ -17,15 +17,15 @@ create(req, res) {
       res.status(201).send({ message: 'Producto creado con éxito', product })
     })
     .catch((err) => {
-      console.error('Error creating product:', err)
+      console.error('Error creando el producto:', err)
       res.status(500).send({ message: 'Error al crear producto' })
-    });
+    })
 },
   
 //GET ALL:
   async getAll(req, res) {
     try {
-      const products = await Product.findAll({ include: [Category, Review] });
+      const products = await Product.findAll({ include: [Category, Review] })
       res.send(products);
     } catch (error) {
       console.error(error);
@@ -104,16 +104,16 @@ async sortedByPriceDescending(req, res) {
         ['price', 'DESC'], // Order by price in descending order
       ],
       include: [Category, Review],
-    });
+    })
 
     if (!products || products.length === 0) {
-      return res.status(404).send({ message: 'No products found' });
+      return res.status(404).send({ message: 'Producto no encontrado' })
     }
 
     res.status(200).send(products);
   } catch (error) {
-    console.error('Error obtaining products:', error);
-    res.status(500).send({ message: 'Error al obtener los productos' });
+    console.error('Error al obtener los producto:', error);
+    res.status(500).send({ message: 'Error al obtener los productos' })
   }
 },
 
@@ -125,12 +125,12 @@ async delete(req, res) {
       where: { id: req.params.id }
     });
     if (deletedProduct === 0) {
-      res.status(404).send({ message: 'Producto no encontrado con el ID especificado' });
+      res.status(404).send({ message: 'Producto no encontrado con el ID especificado' })
     } else {
-      res.send({ message: 'El producto ha sido eliminado' });
+      res.send({ message: 'El producto ha sido eliminado' })
     }
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 },
 
@@ -140,13 +140,13 @@ update(req, res) {
   Product.findByPk(id)
     .then((products) => {
       if (!products) {
-        return res.status(404).send({ message: 'Producto no encontrado' });
+        return res.status(404).send({ message: 'Producto no encontrado' })
       }
       return products.update(req.body)
         .then(() => res.status(200).send({ message: 'Producto actualizado con éxito', Product }))
-        .catch(error => res.status(400).send({ message: 'Error al actualizar producto', error }));
+        .catch(error => res.status(400).send({ message: 'Error al actualizar producto', error }))
     })
-    .catch(error => res.status(400).send({ message: 'Error al actualizar producto', error }));
+    .catch(error => res.status(400).send({ message: 'Error al actualizar producto', error }))
 },
 
 }

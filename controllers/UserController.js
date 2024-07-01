@@ -9,18 +9,18 @@ const UserController = {
   // CREATE:
   async create(req, res, next) {
     try {
-      const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone'];
-      const missingFields = requiredFields.filter(field => !req.body[field]);
+      const requiredFields = ['firstName', 'lastName', 'email', 'password', 'address', 'phone']
+      const missingFields = requiredFields.filter(field => !req.body[field])
   
       if (missingFields.length > 0) {
-        res.status(400).send({ message: 'Rellena todos los campos obligatorios'});
+        res.status(400).send({ message: 'Rellena todos los campos obligatorios'})
         return
       }
   
-      // Validacion de email mediante REGEX
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // email REGEX
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(req.body.email)) {
-        res.status(400).send({ message: 'Formato de email incorrecto' });
+        res.status(400).send({ message: 'Formato de email incorrecto' })
         return;
       }
   
@@ -30,11 +30,11 @@ const UserController = {
         ...req.body,
         password: passwordHash,
         role: 'user'
-      });
+      })
   
-      res.status(201).send({ message: 'Usuario creado con éxito', user });
+      res.status(201).send({ message: 'Usuario creado con éxito', user })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       next(error)
     }
   },
@@ -45,13 +45,13 @@ update(req, res) {
   User.findByPk(id)
     .then((users) => {
       if (!users) {
-        return res.status(404).send({ message: 'Usuario no encontrado' });
+        return res.status(404).send({ message: 'Usuario no encontrado' })
       }
       return products.update(req.body)
         .then(() => res.status(200).send({ message: 'Usuario actualizado con éxito', Product }))
-        .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }));
+        .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }))
     })
-    .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }));
+    .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }))
 },
 
 // GET ALL:
@@ -59,10 +59,11 @@ async getAll(req, res) {
   try {
     const users = await User.findAll({ include: [{
       model: Order,
-    }],});
-    res.send(users);
+    }],
+  })
+    res.send(users)
   } catch (error) {
-    console.error(error);
+    console.error(error)
     res.status(500).send({
       message: "Error a la hora de mostrar usuarios.",
     });
@@ -77,10 +78,10 @@ async getById(req, res) {
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' })
     }
-    res.json({ user });
+    res.json({ user })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error mostrando usuario' });
+    console.error(error)
+    res.status(500).json({ message: 'Error mostrando usuario' })
   }
 },
 
@@ -89,7 +90,7 @@ async getById(req, res) {
 async getLogged(req, res) {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' })
     }
     const userId = req.user.id;
     const user = await User.findByPk(userId, {
@@ -101,17 +102,15 @@ async getLogged(req, res) {
     });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Usuario no encontrado' })
     }
-
     res.json(user);
   } catch (error) {
     console.error(error);
     if (error.name === 'SequelizeUniqueConstraintError') {
-      // Handle specific database constraint errors
-      res.status(400).json({ message: 'Unique constraint violated' });
+      res.status(400).json({ message: 'Unique constraint violated' })
     } else {
-      res.status(500).json({ message: 'Error retrieving user data' });
+      res.status(500).json({ message: 'Error recogiendo los datos del usuario' })
     }
   }
 },
@@ -140,21 +139,41 @@ async getLogged(req, res) {
   },
  
 // LOGIN:
-  login(req, res) {
-    User.findOne({ where: { email: req.body.email } }).then((user) => {
-      if (!user) {
-        return res.status(400).send({ message: 'Usuario o contraseña incorrectos' })
-      }
-      const isMatch = bcrypt.compareSync(req.body.password, user.password)
-      if (!isMatch) {
-        return res.status(400).send({ message: 'Usuario o contraseña incorrectos' })
-      }
-      const token = jwt.sign({ id: user.id }, jwt_secret)
-      Token.create({ token, UserId: user.id })
-      res.send({ message: 'Bienvenid@ ' + user.firstName, user, token })
-     })
-  },
-  
+async login(req, res) {
+  try {
+    const user = await User.findOne({ where: { email: req.body.email } })
+
+    if (!user) {
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
+    }
+
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
+    }
+
+    const existingToken = await Token.findOne({
+      where: { UserId: user.id },
+    });
+
+    if (existingToken) {
+      return res.status(200).json({
+        message: 'Error a la hora de loguearte: Ya estás loggead@',
+      });
+    }
+
+    const newToken = jwt.sign({ id: user.id }, jwt_secret);
+    await Token.create({ token: newToken, UserId: user.id });
+
+    res.status(200).json({
+      message: 'Bienvenid@ ' + user.firstName,
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error en el logging' });
+  }
+},
+
 // LOGOUT:
   async logout(req, res) {
     try {

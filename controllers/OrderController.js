@@ -6,21 +6,26 @@ const OrderController = {
 async create(req, res) {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' })
+      return res.status(401).json({ message: 'No estas autorizado' })
     }
-    const userId = req.user.id
-    const orderData = { ...req.body }
-    const createdOrder = await Order.create({ ...orderData, UserId: userId })
 
-    await createdOrder.addProduct(req.body.ProductId)
+    const userId = req.user.id
+
+    const orderData = { ...req.body }
+    
+    orderData.UserId = userId;
+
+    const createdOrder = await Order.create(orderData);
+
+    await createdOrder.addProduct(req.body.ProductId);
 
     res.status(201).json({
-      message: 'Order created successfully',
+      message: 'Pedido creado con éxito',
       order: createdOrder,
-    });
+    })
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating order' })
+    res.status(500).json({ message: 'Error creando un pedido' })
   }
 },
 

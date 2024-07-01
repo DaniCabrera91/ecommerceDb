@@ -6,21 +6,20 @@ const ReviewController = {
 async create(req, res) {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'No estas autorizado' })
     }
+    const userId = req.user.id
+    const reviewData = { ...req.body, UserId: userId }
 
-    const userId = req.user.id; // Get user ID from logged-in user
-    const reviewData = { ...req.body, UserId: userId }; // Add user ID to review data
-
-    const review = await Review.create(reviewData); // Create review
+    const review = await Review.create(reviewData)
 
     res.status(201).json({
       message: 'Review created successfully',
       review,
-    });
+    })
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating review' });
+    res.status(500).json({ message: 'Error creating review' })
   }
 },
 
@@ -47,28 +46,28 @@ getAll(req, res) {
 async update(req, res) {
   try {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'No estas autorizado' })
     }
 
-    const reviewId = req.params.id; // Get review ID from URL parameter
-    const userId = req.user.id; // Get user ID from authenticated user
+    const reviewId = req.params.id
+    const userId = req.user.id
 
-    const foundReview = await Review.findByPk(reviewId); // Find review by ID
+    const foundReview = await Review.findByPk(reviewId)
 
     if (!foundReview) {
-      return res.status(404).json({ message: 'Review not found' });
+      return res.status(404).json({ message: 'Review no encontrada' })
     }
 
     if (foundReview.UserId !== userId) {
-      return res.status(403).json({ message: 'Forbidden: You cannot update this review' });
+      return res.status(403).json({ message: 'Atención: No estas autorizado a actualizar la review' })
     }
 
-    await foundReview.update(req.body); // Update review with request data
+    await foundReview.update(req.body)
 
-    res.status(200).json({ message: 'Review updated successfully' });
+    res.status(200).json({ message: 'Review actualizada con éxito' })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error updating review' });
+    console.error(error)
+    res.status(500).json({ message: 'Error updating review' })
   }
 },
 

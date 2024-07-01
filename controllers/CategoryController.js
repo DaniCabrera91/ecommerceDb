@@ -17,13 +17,13 @@ const CategoryController = {
   Category.findByPk(id)
     .then((category) => {
       if (!category) {
-        return res.status(404).send({ message: 'Categoría no encontrada' });
+        return res.status(404).send({ message: 'Categoría no encontrada' })
       }
       return category.update(req.body)
         .then(() => res.status(200).send({ message: 'Categoría actualizada con éxito', category }))
-        .catch(error => res.status(400).send({ message: 'Error al actualizar categoría', error }));
+        .catch(error => res.status(400).send({ message: 'Error al actualizar categoría', error }))
     })
-    .catch(error => res.status(400).send({ message: 'Error al actualizar categoría', error }));
+    .catch(error => res.status(400).send({ message: 'Error al actualizar categoría', error }))
 },
 
 //DELETE:
@@ -33,19 +33,19 @@ async delete(req, res) {
       where: { id: req.params.id }
     });
     if (deletedCategory === 0) {
-      res.status(404).send({ message: 'Categoría no encontrada con el ID especificado' });
+      res.status(404).send({ message: 'Categoría no encontrada con el ID especificado' })
     } else {
-      res.send({ message: 'La categoría ha sido eliminada con éxito' });
+      res.send({ message: 'La categoría ha sido eliminada con éxito' })
     }
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 },
 
 // GET ALL: 
  async getAll(req, res) {
   try {
-    const categories = await Category.findAll({ include: [Product] });
+    const categories = await Category.findAll({ include: [Product] })
     res.send(categories);
   } catch (error) {
     console.error(error);
@@ -61,11 +61,11 @@ getById(req, res) {
   Category.findByPk(id ,{ include: [Product] })
     .then((category) => {
       if (!category) {
-        return res.status(404).send({ message: 'Categoría no encontrada' });
+        return res.status(404).send({ message: 'Categoría no encontrada' })
       }
       return res.status(200).send(category);
     })
-    .catch(error => res.status(400).send({ message: 'Error al obtener categoría', error }));
+    .catch(error => res.status(400).send({ message: 'Error al obtener categoría', error }))
 },
 
 //GET BY NAME:
@@ -77,11 +77,11 @@ getByName(req, res) {
   })
     .then((category) => {
       if (!category) {
-        return res.status(404).send({ message: 'Categoría no encontrada' });
+        return res.status(404).send({ message: 'Categoría no encontrada' })
       }
       return res.status(200).send(category);
     })
-    .catch(error => res.status(400).send({ message: 'Error al obtener categoría', error }));
+    .catch(error => res.status(400).send({ message: 'Error al obtener categoría', error }))
 },
 
 }
