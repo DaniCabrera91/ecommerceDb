@@ -48,7 +48,50 @@ jwt_secret (definirlo en config.json [development])
 
 
 ## Documentation
-
+# Estructura del proyecto
+tuprojecto/
+├── config/
+│   └── config-example.json
+├── controllers/
+│   ├── CategoryController.js
+│   ├── OrderController.js
+│   ├── ProductController.js
+│   ├── ReviewController.js
+│   └── UserController.js
+├── middlewares/
+│   ├── authentication.js
+│   └── errors.js
+├── migrations/
+│   ├── 20240629164256-create-user.js
+│   ├── 20240629164304-create-category.js
+│   ├── 20240629164324-create-product.js
+│   ├── 20240629164332-create-order.js
+│   ├── 20240629164343-create-order-product.js
+│   ├── 20240629164353-create-review.js
+│   ├── 20240629164846-create-token.js
+│   └── 20240629165252-changeUserColumn.js
+├── models/
+│   ├── category.js
+│   ├── index.js
+│   ├── order.js
+│   ├── orderproduct.js
+│   ├── product.js
+│   ├── review.js
+│   ├── token.js
+│   └── user.js
+├── routes/
+│   ├── categories.js
+│   ├── orders.js
+│   ├── products.js
+│   ├── reviews.js
+│   └── users.js
+├── seeders/
+│   └── 20240624175955-demo-product.js
+├── .gitignore
+├── README.md
+├── index.js
+├── package-lock.json
+└── package.json
 
 
 
