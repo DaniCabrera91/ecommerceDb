@@ -89,29 +89,25 @@ async getById(req, res) {
 // GET LOGGED:
 async getLogged(req, res) {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' })
-    }
-    const userId = req.user.id;
-    const user = await User.findByPk(userId, {
-      attributes: ['id', 'firstName', 'email'], // Specify user attributes to include
-      include: [{
-        model: Order,
-        include: [Product],
-      }],
-    });
+    // Access the authenticated user data from the request object
+    const user = req.user; // Assuming the authentication middleware attaches the user data to 'req.user'
 
     if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' })
+      return res.status(401).json({ message: 'No estás autorizado' }); // User is not authenticated
     }
-    res.json(user);
+
+    // Fetch detailed user data (optional)
+    const detailedUser = await User.findOne({ _id: user._id }); // Replace with your specific user data retrieval logic
+
+    const responseUser = detailedUser ? detailedUser : user; // Use detailed data if available, otherwise use basic user object
+
+    res.status(200).json({
+      message: 'Usuario loggeado con éxito',
+      user: responseUser, // Send the user data
+    });
   } catch (error) {
     console.error(error);
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      res.status(400).json({ message: 'Unique constraint violated' })
-    } else {
-      res.status(500).json({ message: 'Error recogiendo los datos del usuario' })
-    }
+    res.status(500).json({ message: 'Error al obtener el usuario loggeado' });
   }
 },
 
