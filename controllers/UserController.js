@@ -159,11 +159,12 @@ async login(req, res) {
     }
 
     const newToken = jwt.sign({ id: user.id }, jwt_secret);
-    await Token.create({ token: newToken, UserId: user.id });
+await Token.create({ token: newToken, UserId: user.id });
 
-    res.status(200).json({
-      message: 'Bienvenid@ ' + user.firstName,
-    })
+res.status(200).json({
+  message: 'Bienvenid@ ' + user.firstName,
+  token: newToken 
+})
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error en el logging' });
