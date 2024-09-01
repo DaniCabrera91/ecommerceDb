@@ -89,24 +89,14 @@ async getById(req, res) {
 // GET LOGGED:
 async getLogged(req, res) {
   try {
-    // Access the authenticated user data from the request object
-    const user = req.user; // Assuming the authentication middleware attaches the user data to 'req.user'
-
-    if (!user) {
-      return res.status(401).json({ message: 'No estás autorizado' }); // User is not authenticated
-    }
-
-    // Fetch detailed user data (optional)
-    const detailedUser = await User.findOne({ _id: user._id }); // Replace with your specific user data retrieval logic
-
-    const responseUser = detailedUser ? detailedUser : user; // Use detailed data if available, otherwise use basic user object
+    const user = req.user;  // Obtener el usuario desde req.user, configurado por el middleware
 
     res.status(200).json({
       message: 'Usuario loggeado con éxito',
-      user: responseUser, // Send the user data
+      user,  // Enviar la información del usuario autenticado
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error al obtener el usuario loggeado:', error);
     res.status(500).json({ message: 'Error al obtener el usuario loggeado' });
   }
 },
@@ -134,37 +124,32 @@ async getLogged(req, res) {
     res.send('Usuario actualizado con éxito')
   },
  
+
 // LOGIN:
 async login(req, res) {
   try {
-    const user = await User.findOne({ where: { email: req.body.email } })
+    // Buscar al usuario por email
+    const user = await User.findOne({ where: { email: req.body.email } });
 
     if (!user) {
-      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
     }
 
-    const isMatch = await bcrypt.compare(req.body.password, user.password)
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' })
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
     }
 
-    const existingToken = await Token.findOne({
-      where: { UserId: user.id },
-    });
-
-    if (existingToken) {
-      return res.status(200).json({
-        message: 'Error a la hora de loguearte: Ya estás loggead@',
-      });
-    }
-
+    // Crear un nuevo token
     const newToken = jwt.sign({ id: user.id }, jwt_secret);
-await Token.create({ token: newToken, UserId: user.id });
 
-res.status(200).json({
-  message: 'Bienvenid@ ' + user.firstName,
-  token: newToken 
-})
+    // Almacenar el nuevo token para el usuario
+    await Token.create({ token: newToken, UserId: user.id });
+
+    res.status(200).json({
+      message: 'Bienvenid@ ' + user.firstName,
+      token: newToken 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error en el logging' });
