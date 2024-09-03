@@ -38,12 +38,12 @@ create(req, res) {
   //GET BY ID:
   getById(req, res) {
     const { id } = req.params;
-    Product.findByPk(id, { include: [Category, Review]}) // Potential issue here
-      .then((Product) => {
-        if (!Product) {
+    Product.findByPk(id, { include: [Category, Review] })
+      .then((product) => {
+        if (!product) {
           return res.status(404).send({ message: 'Producto no encontrado' });
         }
-        return res.status(200).send(Product);
+        return res.status(200).send(product);
       })
       .catch(error => res.status(400).send({ message: 'Error al obtener el producto', error }));
   },
