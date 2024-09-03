@@ -1,4 +1,4 @@
-const { Order, Product } = require('../models'); // Asegúrate de que el modelo Product esté correctamente importado
+const { Order, Product } = require('../models')
 const moment = require('moment');
 
 const OrderController = {
@@ -7,23 +7,16 @@ const OrderController = {
       if (!req.user) {
         return res.status(401).json({ message: 'No estás autorizado' });
       }
-
-      // Verifica los datos recibidos
-      console.log('Request Body:', req.body);
-
       const userId = req.user.id;
       const orderDate = moment().format('YYYY-MM-DD');
-      const deliveryDate = moment().add(7, 'days').format('YYYY-MM-DD'); // Asegúrate de que el cálculo de fechas es el esperado
+      const deliveryDate = moment().add(2, 'days').format('YYYY-MM-DD')
 
       const orderData = { 
         ...req.body,
         UserId: userId,
         orderDate,
         deliveryDate,
-      };
-
-      // Verifica los datos antes de la creación
-      console.log('Order Data:', orderData);
+      }
 
       const createdOrder = await Order.create(orderData);
 
