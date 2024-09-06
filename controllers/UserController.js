@@ -54,6 +54,14 @@ update(req, res) {
     .catch(error => res.status(400).send({ message: 'Error al actualizar usuario', error }))
 },
 
+async update(req, res) {
+  await User.update(
+    { firstName: req.body.firstName, email: req.body.email },
+    { where: { id: req.params.id } }
+  )
+  res.send('Usuario actualizado con éxito')
+},
+
 // GET ALL:
 async getAll(req, res) {
   try {
@@ -114,16 +122,7 @@ async getLogged(req, res) {
       },
     })
     res.send('El usuario ha sido eliminado con éxito')
-  },
-
-  async update(req, res) {
-    await User.update(
-      { firstName: req.body.firstName, email: req.body.email },
-      { where: { id: req.params.id } }
-    )
-    res.send('Usuario actualizado con éxito')
-  },
- 
+  }, 
 
 // LOGIN:
 async login(req, res) {
@@ -177,6 +176,3 @@ async login(req, res) {
  }
  
 module.exports = UserController
-
-
-
