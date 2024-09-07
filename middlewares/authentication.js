@@ -5,12 +5,14 @@ const { jwt_secret } = require('../config/config.json')['development'];
 
 const authentication = async (req, res, next) => {
   try {
+    // Extraer el token del encabezado Authorization
     const token = req.headers.authorization;
 
     if (!token) {
       return res.status(401).send({ message: 'No estás autorizado' });
     }
 
+    // Decodificar el token
     const payload = jwt.verify(token, jwt_secret);
     const user = await User.findByPk(payload.id);
 
